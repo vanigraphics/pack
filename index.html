@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Gallery - Vani Graphics</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body { font-family: "Segoe UI", Tahoma, sans-serif; background: #f9f9fb; color: #333; }
+    header { background: #4a90e2; padding: 15px; text-align: center; }
+    header img { max-height: 180px; object-fit: cover; border-radius: 6px; }
+    section { padding: 40px 20px; margin-bottom: 15px; border-radius: 8px; }
+    .product-card { border: 1px solid #e0e6ef; border-radius: 8px; padding: 10px; background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05); text-align: center; }
+    .product-card img { width: 100%; height: 150px; object-fit: contain; margin-bottom: 10px; }
+    .cart { background: #eef5ff; }
+    .form-section { background: #ffffff; }
+    .cart-table th { background: #d9e8ff; }
+    footer { background: #4a90e2; color: #fff; text-align: center; padding: 15px; }
+    footer p { margin: 0; }
+    .totals-box { background: #fff; padding: 15px; border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08); max-width: 350px; margin-left: auto; }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <img src="banner.jpg" alt="Company Banner">
+  </header>
+
+  <!-- Product Gallery -->
+  <section class="container bg-white">
+    <h3 class="text-primary mb-4">Product Gallery</h3>
+    <div class="row" id="productGallery"></div>
+  </section>
+
+  <!-- Cart Section -->
+  <section class="container cart">
+    <h3 class="text-primary mb-4">Cart Order</h3>
+    <table class="table cart-table">
+      <thead>
+        <tr><th>Product</th><th>Qty</th><th>Price</th><th>Total</th><th>Remove</th></tr>
+      </thead>
+      <tbody id="cartItems"></tbody>
+    </table>
+    <div class="totals-box">
+      <p id="cartSubtotal">Subtotal: ₹0</p>
+      <p id="cartGST">GST (18%): ₹0</p>
+      <h5 id="cartTotal">Grand Total: ₹0</h5>
+    </div>
+    <button class="btn btn-success mt-3" onclick="sendWhatsAppOrder()">Send WhatsApp Order</button>
+    <button class="btn btn-primary mt-3" onclick="downloadPDF()">Download PDF Invoice</button>
+  </section>
+
+  <!-- Quotation Form -->
+  <section class="container form-section">
+    <h3 class="text-primary mb-4">Quotation For Box</h3>
+    <form id="quotationForm" onsubmit="sendWhatsAppInquiry(event)">
+      <div class="mb-3">
+        <label class="form-label">Unit:</label>
+        <div class="d-flex gap-3 flex-wrap">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="unit" value="MM" checked>
+            <label class="form-check-label">MM</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="unit" value="CM">
+            <label class="form-check-label">CM</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="unit" value="Inches">
+            <label class="form-check-label">Inches</label>
+          </div>
+          <input type="number" class="form-control" name="length" placeholder="Enter Length" required>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col"><input type="number" class="form-control" name="width" placeholder="Enter Width" required></div>
+        <div class="col"><input type="number" class="form-control" name="height" placeholder="Enter Height" required></div>
+      </div>
+
+      <div class="mb-3">
+        <input type="number" class="form-control" name="gsm" placeholder="Enter GSM" required>
+      </div>
+      <div class="mb-3">
+        <select class="form-select" name="material" required>
+          <option value="ITC">ITC</option>
+          <option value="Corrugation">Corrugation</option>
+          <option value="Duplex">Duplex</option>
+          <option value="Craft">Craft</option>
+          <option value="White Back">White Back</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <select class="form-select" name="boxType" required>
+          <option value="Both Side Tuckin Flap">Both Side Tuckin Flap</option>
+          <option value="Bottom Lock">Bottom Lock</option>
+          <option value="Bottom Pasting">Bottom Pasting</option>
+          <option value="Pastry">Pastry</option>
+          <option value="Cake">Cake</option>
+          <option value="Mailer Box">Mailer Box</option>
+          <option value="Universal">Universal</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <input type="number" class="form-control" name="quantity" placeholder="Enter Quantity" required>
+      </div>
+      <button type="submit" class="btn btn-success">Send WhatsApp Inquiry</button>
+    </form>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p><strong>About Us:</strong> Vani Graphics specializes in high-quality packaging solutions.</p>
+    <p>📞 +91-9876543210 | ✉️ info@vanigraphics.com</p>
+  </footer>
+
+  <script>
+const products = [
+  {id:1,name:"Chicken Masala",price:3.20,length:85,width:45,height:100,material:"ITC",gsm:300,type:"Both Side Tuck In Flap"},
+  {id:2,name:"Garam Masala",price:4.50,length:90,width:50,height:110,material:"Corrugation",gsm:350,type:"Bottom Lock"},
+  {id:3,name:"Product 3",price:180,length:95,width:48,height:105,material:"Duplex",gsm:250,type:"Pastry"},
+  {id:4,name:"Product 4",price:200,length:100,width:60,height:120,material:"Craft",gsm:400,type:"Cake"},
+  {id:5,name:"Product 5",price:220,length:85,width:55,height:95,material:"White Back",gsm:320,type:"Mailer Box"},
+  {id:6,name:"Product 6",price:250,length:90,width:60,height:100,material:"ITC",gsm:350,type:"Universal"},
+  {id:7,name:"Product 7",price:280,length:95,width:65,height:105,material:"Duplex",gsm:370,type:"Pastry"},
+  {id:8,name:"Garment Box",price:280,length:95,width:65,height:105,material:"Duplex",gsm:370,type:"Pastry"}
+];
+let cart = [];
+
+function renderProducts(){
+  const gallery=document.getElementById('productGallery');
+  gallery.innerHTML = "";
+  products.forEach(p=>{
+    gallery.innerHTML += `
+      <div class="col-6 col-md-3 mb-4">
+        <div class="product-card">
+          <img src="product${p.id}.jpg" alt="${p.name}">
+          <h6>${p.name}</h6>
+          <p>MRP: ₹${p.price}</p>
+          <p>${p.length}x${p.width}x${p.height} mm</p>
+          <p>Material: ${p.material}, GSM: ${p.gsm}</p>
+          <p>Type: ${p.type}</p>
+          <button class="btn btn-sm btn-primary" onclick="addToCart(${p.id})">Add to Cart</button>
+        </div>
+      </div>`;
+  });
+}
+
+function addToCart(id){
+  let product=products.find(p=>p.id===id);
+  let item=cart.find(c=>c.id===id);
+  if(item){ item.qty+=2000; }
+  else{ cart.push({...product,qty:2000}); }
+  renderCart();
+}
+
+function removeFromCart(id){
+  cart=cart.filter(c=>c.id!==id);
+  renderCart();
+}
+
+function updateQty(id,qty){
+  let item=cart.find(c=>c.id===id);
+  if(item){ item.qty=parseInt(qty)||2000; }
+  renderCart();
+}
+
+function renderCart(){
+  const tbody=document.getElementById('cartItems');
+  tbody.innerHTML="";
+  let subtotal=0;
+  cart.forEach(item=>{
+    let total=item.price*item.qty;
+    subtotal+=total;
+    tbody.innerHTML+=`
+      <tr>
+        <td>${item.name}</td>
+        <td><input type='number' value='${item.qty}' min='1' onchange='updateQty(${item.id},this.value)' class='form-control form-control-sm' style='width:90px'></td>
+        <td>₹${item.price}</td>
+        <td>₹${total}</td>
+        <td><button class='btn btn-sm btn-danger' onclick='removeFromCart(${item.id})'>X</button></td>
+      </tr>`;
+  });
+  let gst=subtotal*0.18;
+  let grand=subtotal+gst;
+  document.getElementById('cartSubtotal').innerText=`Subtotal: ₹${subtotal}`;
+  document.getElementById('cartGST').innerText=`GST (18%): ₹${gst.toFixed(2)}`;
+  document.getElementById('cartTotal').innerText=`Grand Total: ₹${grand.toFixed(2)}`;
+}
+
+function sendWhatsAppOrder(){
+  let subtotal=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  let gst=subtotal*0.18;
+  let grand=subtotal+gst;
+  let msg=`Vani Graphics%0AInvoice:%0A`;
+  cart.forEach(i=> msg+=`${i.name} x ${i.qty} = ₹${i.price*i.qty}%0A`);
+  msg+=`Subtotal: ₹${subtotal}%0AGST (18%): ₹${gst.toFixed(2)}%0AGrand Total: ₹${grand.toFixed(2)}`;
+  window.open(`https://wa.me/917770975666?text=${msg}`,'_blank');
+}
+
+function downloadPDF(){
+  const { jsPDF } = window.jspdf;
+  const doc=new jsPDF();
+  doc.setFontSize(12);
+  doc.text("Vani Graphics - Invoice", 10, 10);
+  let y=30;
+  // Table Header
+  doc.text("Sl",10,y);
+  doc.text("Particulars",20,y);
+  doc.text("Qty",100,y);
+  doc.text("Rate",130,y);
+  doc.text("Amount",160,y);
+  y+=10;
+  // Table Rows
+  let subtotal=0;
+  cart.forEach((i,idx)=>{
+    let total=i.price*i.qty;
+    subtotal+=total;
+    doc.text((idx+1).toString(),10,y);
+    doc.text(i.name,20,y);
+    doc.text(i.qty.toString(),100,y);
+    doc.text("₹"+i.price,130,y);
+    doc.text("₹"+total,160,y);
+    y+=10;
+  });
+  let gst=subtotal*0.18;
+  let grand=subtotal+gst;
+  y+=10;
+  doc.text(`Subtotal: ₹${subtotal}`,130,y); y+=10;
+  doc.text(`GST (18%): ₹${gst.toFixed(2)}`,130,y); y+=10;
+  doc.text(`Grand Total: ₹${grand.toFixed(2)}`,130,y);
+  doc.save("invoice.pdf");
+}
+
+function sendWhatsAppInquiry(event){
+  event.preventDefault();
+  const form=new FormData(event.target);
+  const unit=form.get('unit');
+  const length=form.get('length');
+  const width=form.get('width');
+  const height=form.get('height');
+  const gsm=form.get('gsm');
+  const material=form.get('material');
+  const boxType=form.get('boxType');
+  const qty=form.get('quantity');
+  if(!length||!width||!height||!gsm||!qty){ alert("Please fill all fields correctly."); return; }
+  let msg=`Vani Graphics%0ABox Quotation Inquiry:%0AUnit: ${unit}%0AL:${length}, W:${width}, H:${height}%0AMaterial: ${material}, GSM:${gsm}%0AType: ${boxType}%0AQuantity: ${qty}`;
+  window.open(`https://wa.me/917770975666?text=${msg}`,'_blank');
+}
+
+renderProducts();
+  </script>
+</body>
+</html>

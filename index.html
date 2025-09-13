@@ -8,12 +8,28 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     body { font-family: "Segoe UI", Tahoma, sans-serif; background: #f9f9fb; color: #333; }
-    header { background: #4a90e2; padding: 15px; text-align: center; }
-    header img { max-height: 180px; object-fit: cover; border-radius: 6px; }
+    
+    /* 🔹 Banner */
+    header { background: #4a90e2; text-align: center; }
+    header img { width: 100%; max-height: 600px; object-fit: cover; border-radius: 6px; }
+
     section { padding: 40px 20px; margin-bottom: 15px; border-radius: 8px; }
-    .product-card { border: 1px solid #e0e6ef; border-radius: 8px; padding: 10px; background: #fff;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05); text-align: center; }
+
+    /* 🔹 Product Card */
+    .product-card {
+      border: 1px solid #e0e6ef;
+      border-radius: 8px;
+      padding: 10px;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      text-align: center;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
     .product-card img { width: 100%; height: 150px; object-fit: contain; margin-bottom: 10px; }
+
     .cart { background: #eef5ff; }
     .form-section { background: #ffffff; }
     .cart-table th { background: #d9e8ff; }
@@ -24,18 +40,18 @@
   </style>
 </head>
 <body>
-  <!-- Header -->
+  <!-- 🔹 Header / Banner -->
   <header>
     <img src="banner.jpg" alt="Company Banner">
   </header>
 
-  <!-- Product Gallery -->
+  <!-- 🔹 Product Gallery -->
   <section class="container bg-white">
     <h3 class="text-primary mb-4">Product Gallery</h3>
     <div class="row" id="productGallery"></div>
   </section>
 
-  <!-- Cart Section -->
+  <!-- 🔹 Cart Section -->
   <section class="container cart">
     <h3 class="text-primary mb-4">Cart Order</h3>
     <table class="table cart-table">
@@ -53,7 +69,7 @@
     <button class="btn btn-primary mt-3" onclick="downloadPDF()">Download PDF Invoice</button>
   </section>
 
-  <!-- Quotation Form -->
+  <!-- 🔹 Quotation Form -->
   <section class="container form-section">
     <h3 class="text-primary mb-4">Quotation For Box</h3>
     <form id="quotationForm" onsubmit="sendWhatsAppInquiry(event)">
@@ -95,7 +111,10 @@
       </div>
       <div class="mb-3">
         <select class="form-select" name="boxType" required>
-          <option value="Both Side Tuckin Flap">Both Side Tuckin Flap</option>
+          
+	  <option value="Both Side Tuckin Flap">Both Side Tuckin Flap</option>
+	  <option value="Garment Box">Garment Box</option>
+	  <option value="Agarbatti Box">Agarbatti Box</option>
           <option value="Bottom Lock">Bottom Lock</option>
           <option value="Bottom Pasting">Bottom Pasting</option>
           <option value="Pastry">Pastry</option>
@@ -111,12 +130,13 @@
     </form>
   </section>
 
-  <!-- Footer -->
+  <!-- 🔹 Footer -->
   <footer>
     <p><strong>About Us:</strong> Vani Graphics specializes in high-quality packaging solutions.</p>
     <p>📞 +91-9876543210 | ✉️ info@vanigraphics.com</p>
   </footer>
 
+  <!-- 🔹 Scripts -->
   <script>
 const products = [
   {id:1,name:"Chicken Masala",price:3.20,length:85,width:45,height:100,material:"ITC",gsm:300,type:"Both Side Tuck In Flap"},
@@ -135,7 +155,7 @@ function renderProducts(){
   gallery.innerHTML = "";
   products.forEach(p=>{
     gallery.innerHTML += `
-      <div class="col-6 col-md-3 mb-4">
+      <div class="col-12 col-sm-6 col-md-4 mb-4 d-flex">
         <div class="product-card">
           <img src="product${p.id}.jpg" alt="${p.name}">
           <h6>${p.name}</h6>
